@@ -11,22 +11,56 @@ output:
 
 First, load the packages needed for the analysis.
 
-```{r loadPackages, echo = TRUE}
+
+```r
 library(dplyr)
+```
+
+```
+## Warning: package 'dplyr' was built under R version 4.2.2
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(tidyr)
+```
+
+```
+## Warning: package 'tidyr' was built under R version 4.2.2
+```
+
+```r
 library(lattice)
 ```
 
 Then load the data.
 
-``` {r loadData, echo = TRUE}
+
+```r
 unzip("activity.zip")
 dat <- read.csv("activity.csv")
 ```
 
 The format of the "date" column should be changed from character to date format.
 
-```{r formatDate, echo = TRUE}
+
+```r
 dat$date <- as.Date(dat$date, format = "%Y-%m-%d")
 ```
 
@@ -35,7 +69,8 @@ dat$date <- as.Date(dat$date, format = "%Y-%m-%d")
 
 First, calculate the total number of steps taken per day, ignoring missing values in the data set for now.
 
-```{r totalPerDay, echo = TRUE}
+
+```r
 totalPerDay <- dat %>%
                 subset(steps != "NA") %>%
                 group_by(date) %>%
@@ -44,16 +79,31 @@ totalPerDay <- dat %>%
 
 The histogram below shows the total number of steps taken each day.
 
-```{r totalPerDayhist, echo = TRUE}
+
+```r
 hist(totalPerDay$steps, breaks = 100, xlab = "Steps Range", 
      main = "Histogram of Total Steps Per Day", col = "black")
 ```
 
+![](PA1_template_files/figure-html/totalPerDayhist-1.png)<!-- -->
+
 The mean and median of the total number of steps taken per day are:
 
-```{r mean, echo = TRUE}
+
+```r
 mean(totalPerDay$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(totalPerDay$steps)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -61,7 +111,8 @@ median(totalPerDay$steps)
 
 The average daily pattern can be shown using a time series plot (i.e. type = "1") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r avgPerInterval, echo = TRUE}
+
+```r
 avgPerInterval <- dat %>%
                 subset(steps != "NA") %>%
                 group_by(interval) %>%
@@ -72,11 +123,18 @@ plot(avgPerInterval$interval, avgPerInterval$steps, type = "l",
      main = "Average Number of Steps per 5-Minute Interval")
 ```
 
+![](PA1_template_files/figure-html/avgPerInterval-1.png)<!-- -->
+
 The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is calculated to be:
 
-```{r intervalMax, echo = TRUE}
+
+```r
 intervalMax <- subset(avgPerInterval, avgPerInterval$steps == max(avgPerInterval$steps))
 intervalMax$interval
+```
+
+```
+## [1] 835
 ```
 
 ## Imputing missing values
@@ -85,13 +143,19 @@ There are a number of days/intervals where there are missing values (coded as NA
 
 First, find the total number of missing values in the data set (i.e. the total number of rows with NAs).
 
-```{r NAs, echo = TRUE}
+
+```r
 sum(is.na(dat$steps))
+```
+
+```
+## [1] 2304
 ```
 
 To impute the missing variables, Fill in NAs using the mean for the missing 5-minute interval.
 
-```{r imputeNA, echo = TRUE}
+
+```r
 dat_noNA <- data.frame(steps = integer(0), date = character(0), interval = integer(0))
 for (i in 1:17568) {
         dat_noNA <- rbind(dat_noNA, dat[i, ])
@@ -104,8 +168,8 @@ for (i in 1:17568) {
 
 The histogram below shows the total number of steps taken each day with imputed missing values.
 
-```{r noNAhist, echo = TRUE}
 
+```r
 totalPerDay_noNA <- dat_noNA %>%
         subset(steps != "NA") %>%
         group_by(date) %>%
@@ -115,11 +179,25 @@ hist(totalPerDay_noNA$steps, breaks = 100, xlab = "Steps Range",
      main = "Histogram of Total Steps Per Day", col = "black")
 ```
 
+![](PA1_template_files/figure-html/noNAhist-1.png)<!-- -->
+
 The mean and median of the total number of steps taken each day are:
 
-```{r meanNoNA, echo = TRUE}
+
+```r
 mean(totalPerDay_noNA$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(totalPerDay_noNA$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 Imputing missing data on the estimates of the total daily number of steps did not seem to impact the mean and median of the data. Therefore, the presence of missing data did not seem to bias the calculations of the data in the this case.
@@ -128,7 +206,8 @@ Imputing missing data on the estimates of the total daily number of steps did no
 
 Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day. We will use the data set with missing values imputed.
 
-```{r weekday, echo = TRUE}
+
+```r
 dat_noNA$day <- weekdays(dat_noNA$date)
 dat_noNA$day <- factor(dat_noNA$day == "Saturday" | dat_noNA$day == "Sunday", 
                        labels = c("weekday", "weekend"))
@@ -136,7 +215,8 @@ dat_noNA$day <- factor(dat_noNA$day == "Saturday" | dat_noNA$day == "Sunday",
 
 The time series panel plot shows the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r panelPlot, echo = TRUE}
+
+```r
 avgPerInterval_noNA <- dat_noNA %>%
                 group_by(interval, day) %>%
                 summarize_at("steps", mean)
@@ -145,5 +225,7 @@ xyplot(steps ~ interval | day, data = avgPerInterval_noNA, type = "l",
        xlab = "Interval", ylab = "Steps", 
        main = "Average Number of Steps per 5-Minute Interval", layout = c(1,2))
 ```
+
+![](PA1_template_files/figure-html/panelPlot-1.png)<!-- -->
 
 It can be observed that for weekdays, the number of steps do not exceed 200 in a given interval, and the pattern is consistent throughout the day. However, on the weekends, we see a spike in number of steps between the intervals 800-1000, and reduces for the rest of the day. 
