@@ -9,7 +9,7 @@ output:
 
 ## Download and preprocessing the data
 
-First, load the packages needed for the analysis.
+Load the packages needed for the analysis.
 
 
 ```r
@@ -49,7 +49,7 @@ library(tidyr)
 library(lattice)
 ```
 
-Then load the data.
+Load the data.
 
 
 ```r
@@ -57,7 +57,7 @@ unzip("activity.zip")
 dat <- read.csv("activity.csv")
 ```
 
-The format of the "date" column should be changed from character to date format.
+The format of the "date" column is changed from character to date format.
 
 
 ```r
@@ -67,7 +67,7 @@ dat$date <- as.Date(dat$date, format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-First, calculate the total number of steps taken per day, ignoring missing values in the data set for now.
+Calculate the total number of steps taken per day, ignoring missing values in the data set for now.
 
 
 ```r
@@ -87,25 +87,18 @@ hist(totalPerDay$steps, breaks = 100, xlab = "Steps Range",
 
 ![](PA1_template_files/figure-html/totalPerDayhist-1.png)<!-- -->
 
-The mean and median of the total number of steps taken per day are:
+Calculate the mean and median. 
 
 
 ```r
-mean(totalPerDay$steps)
-```
-
-```
-## [1] 10766.19
+mean0 <- mean(totalPerDay$steps)
 ```
 
 ```r
-median(totalPerDay$steps)
+median0 <- median(totalPerDay$steps)
 ```
 
-```
-## [1] 10765
-```
-
+The mean of the total number of steps taken per day is 1.0766189\times 10^{4} and the median is 10765.
 
 ## What is the average daily activity pattern?
 
@@ -125,17 +118,15 @@ plot(avgPerInterval$interval, avgPerInterval$steps, type = "l",
 
 ![](PA1_template_files/figure-html/avgPerInterval-1.png)<!-- -->
 
-The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is calculated to be:
+Calculate the 5-minute interval that contains the maximum number of steps.
 
 
 ```r
 intervalMax <- subset(avgPerInterval, avgPerInterval$steps == max(avgPerInterval$steps))
-intervalMax$interval
+interval_Max <- intervalMax$interval
 ```
 
-```
-## [1] 835
-```
+The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is 835.
 
 ## Imputing missing values
 
@@ -145,14 +136,12 @@ First, find the total number of missing values in the data set (i.e. the total n
 
 
 ```r
-sum(is.na(dat$steps))
+totalNA <- sum(is.na(dat$steps))
 ```
 
-```
-## [1] 2304
-```
+The total number of missing values in the data set is 2304.
 
-To impute the missing variables, Fill in NAs using the mean for the missing 5-minute interval.
+To impute the missing variables, Fill in NAs using the mean for the corresponding 5-minute interval.
 
 
 ```r
@@ -181,24 +170,15 @@ hist(totalPerDay_noNA$steps, breaks = 100, xlab = "Steps Range",
 
 ![](PA1_template_files/figure-html/noNAhist-1.png)<!-- -->
 
-The mean and median of the total number of steps taken each day are:
+Calculate the mean and median the total number of steps taken per day with imputed data.
 
 
 ```r
-mean(totalPerDay_noNA$steps)
+mean_noNA <- mean(totalPerDay_noNA$steps)
+median_noNA <- median(totalPerDay_noNA$steps)
 ```
 
-```
-## [1] 10766.19
-```
-
-```r
-median(totalPerDay_noNA$steps)
-```
-
-```
-## [1] 10766.19
-```
+The mean of the total number of steps taken per day using the imputed missing data are 1.0766189\times 10^{4} and the median is 1.0766189\times 10^{4}. These are very similar to the previously calculated mean and median where missing values were removed.
 
 Imputing missing data on the estimates of the total daily number of steps did not seem to impact the mean and median of the data. Therefore, the presence of missing data did not seem to bias the calculations of the data in the this case.
 

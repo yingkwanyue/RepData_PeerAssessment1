@@ -9,7 +9,7 @@ output:
 
 ## Download and preprocessing the data
 
-First, load the packages needed for the analysis.
+Load the packages needed for the analysis.
 
 ```{r loadPackages, echo = TRUE}
 library(dplyr)
@@ -17,14 +17,14 @@ library(tidyr)
 library(lattice)
 ```
 
-Then load the data.
+Load the data.
 
 ``` {r loadData, echo = TRUE}
 unzip("activity.zip")
 dat <- read.csv("activity.csv")
 ```
 
-The format of the "date" column should be changed from character to date format.
+The format of the "date" column is changed from character to date format.
 
 ```{r formatDate, echo = TRUE}
 dat$date <- as.Date(dat$date, format = "%Y-%m-%d")
@@ -33,7 +33,7 @@ dat$date <- as.Date(dat$date, format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-First, calculate the total number of steps taken per day, ignoring missing values in the data set for now.
+Calculate the total number of steps taken per day, ignoring missing values in the data set for now.
 
 ```{r totalPerDay, echo = TRUE}
 totalPerDay <- dat %>%
@@ -49,13 +49,16 @@ hist(totalPerDay$steps, breaks = 100, xlab = "Steps Range",
      main = "Histogram of Total Steps Per Day", col = "black")
 ```
 
-The mean and median of the total number of steps taken per day are:
+Calculate the mean and median. 
 
 ```{r mean, echo = TRUE}
-mean(totalPerDay$steps)
-median(totalPerDay$steps)
+mean0 <- mean(totalPerDay$steps)
+```
+```{r median, echo = TRUE}
+median0 <- median(totalPerDay$steps)
 ```
 
+The mean of the total number of steps taken per day is `r mean0` and the median is `r median0`.
 
 ## What is the average daily activity pattern?
 
@@ -72,12 +75,14 @@ plot(avgPerInterval$interval, avgPerInterval$steps, type = "l",
      main = "Average Number of Steps per 5-Minute Interval")
 ```
 
-The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is calculated to be:
+Calculate the 5-minute interval that contains the maximum number of steps.
 
 ```{r intervalMax, echo = TRUE}
 intervalMax <- subset(avgPerInterval, avgPerInterval$steps == max(avgPerInterval$steps))
-intervalMax$interval
+interval_Max <- intervalMax$interval
 ```
+
+The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is `r interval_Max`.
 
 ## Imputing missing values
 
@@ -86,10 +91,12 @@ There are a number of days/intervals where there are missing values (coded as NA
 First, find the total number of missing values in the data set (i.e. the total number of rows with NAs).
 
 ```{r NAs, echo = TRUE}
-sum(is.na(dat$steps))
+totalNA <- sum(is.na(dat$steps))
 ```
 
-To impute the missing variables, Fill in NAs using the mean for the missing 5-minute interval.
+The total number of missing values in the data set is `r totalNA`.
+
+To impute the missing variables, Fill in NAs using the mean for the corresponding 5-minute interval.
 
 ```{r imputeNA, echo = TRUE}
 dat_noNA <- data.frame(steps = integer(0), date = character(0), interval = integer(0))
@@ -115,12 +122,14 @@ hist(totalPerDay_noNA$steps, breaks = 100, xlab = "Steps Range",
      main = "Histogram of Total Steps Per Day", col = "black")
 ```
 
-The mean and median of the total number of steps taken each day are:
+Calculate the mean and median the total number of steps taken per day with imputed data.
 
 ```{r meanNoNA, echo = TRUE}
-mean(totalPerDay_noNA$steps)
-median(totalPerDay_noNA$steps)
+mean_noNA <- mean(totalPerDay_noNA$steps)
+median_noNA <- median(totalPerDay_noNA$steps)
 ```
+
+The mean of the total number of steps taken per day using the imputed missing data are `r mean_noNA` and the median is `r median_noNA`. These are very similar to the previously calculated mean and median where missing values were removed.
 
 Imputing missing data on the estimates of the total daily number of steps did not seem to impact the mean and median of the data. Therefore, the presence of missing data did not seem to bias the calculations of the data in the this case.
 
